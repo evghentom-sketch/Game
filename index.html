@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Rush: Order Masters</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(90deg, #2c3e50 0%, #34495e 100%);
+            padding: 20px;
+            border-bottom: 4px solid #f39c12;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.03) 10px,
+                rgba(255,255,255,0.03) 20px
+            );
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .game-title {
+            font-size: 3rem;
+            color: #27ae60;
+            text-shadow: 
+                0 0 10px #27ae60,
+                0 0 20px #27ae60,
+                0 0 30px #27ae60,
+                0 0 40px #f39c12,
+                0 0 70px #f39c12;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #27ae60, 0 0 20px #27ae60, 0 0 30px #27ae60, 0 0 40px #f39c12, 0 0 70px #f39c12; }
+            to { text-shadow: 0 0 20px #27ae60, 0 0 30px #27ae60, 0 0 40px #27ae60, 0 0 50px #f39c12, 0 0 80px #f39c12; }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%2334495e" width="100" height="100"/><path fill="%232c3e50" d="M0 0L100 100M100 0L0 100" stroke="%2334495e" stroke-width="1"/></svg>');
+            margin: 20px 0;
+            border-radius: 10px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            color: #27ae60;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: #ecf0f1;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid #f39c12;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #f39c12;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(44, 62, 80, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #34495e;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #27ae60, transparent);
+            transition: left 0.5s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #27ae60;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            color: #ecf0f1;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: #bdc3c7;
+            line-height: 1.6;
+        }
+
+        /* Characters Section */
+        .characters {
+            padding: 60px 0;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%232c3e50" width="100" height="100"/><circle fill="%2334495e" cx="20" cy="20" r="3"/><circle fill="%2334495e" cx="80" cy="80" r="2"/></svg>');
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .character-card {
+            background: rgba(52, 73, 94, 0.9);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #f39c12;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
+        }
+
+        .character-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 3px solid #f39c12;
+        }
+
+        .character-name {
+            font-size: 1.3rem;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .character-stats {
+            background: rgba(44, 62, 80, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .character-desc {
+            color: #ecf0f1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Warehouse Section */
+        .warehouse {
+            padding: 60px 0;
+        }
+
+        .warehouse-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .zone {
+            background: rgba(39, 174, 96, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #27ae60;
+            transition: all 0.3s ease;
+        }
+
+        .zone:hover {
+            background: rgba(39, 174, 96, 0.3);
+            transform: scale(1.05);
+        }
+
+        .zone-title {
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .zone-desc {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            padding: 40px 0;
+            margin-top: 60px;
+            border-top: 4px solid #f39c12;
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #f39c12;
+        }
+
+        .copyright {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .game-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(39, 174, 96, 0.3);
+            border-radius: 50%;
+            border-top-color: #27ae60;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="logo">
+                <h1 class="game-title">WAREHOUSE RUSH: ORDER MASTERS</h1>
+                <p class="subtitle">Симулятор складской логистики нового поколения</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#features" class="nav-link">Особенности</a></li>
+                <li class="nav-item"><a href="#characters" class="nav-link">Персонажи</a></li>
+                <li class="nav-item"><a href="#warehouse" class="nav-link">Склад</a></li>
+                <li class="nav-item"><a href="#about" class="nav-link">О нас</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="hero">
+            <h2 class="fade-in">Войди в мир складской логистики</h2>
+            <p>Быстрый, реалистичный и захватывающий симулятор выполнения заказов. Твоя скорость и точность — ключ к успеху в жесткой конкуренции складских операций.</p>
+            <a href="#play" class="cta-button bounce">Начать игру <span class="loading"></span></a>
+        </section>
+
+        <section id="features" class="features">
+            <h2 class="section-title">Особенности игры</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📦</div>
+                    <h3 class="feature-title">Реалистичная логистика</h3>
+                    <p class="feature-desc">Система выполнения заказов, максимально приближенная к реальным складским операциям с учетом времени, точности и эффективности.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🏃</div>
+                    <h3 class="feature-title">Динамическая сложность</h3>
+                    <p class="feature-desc">Прогрессивное усложнение заданий от простых одиночных заказов до сложных многоуровневых комбинаций с жесткими временными рамками.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Система рейтинга</h3>
+                    <p class="feature-desc">Оценка производительности на основе скорости, точности и эффективности. Соревнуйся с другими игроками за лидерство.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Уникальные персонажи</h3>
+                    <p class="feature-desc">6 уникальных персонажей с различными способностями и статистикой. Выбирай подходящий стиль игры.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🏭</div>
+                    <h3 class="feature-title">Индустриальный стиль</h3>
+                    <p class="feature-desc">Аутентичный промышленный дизайн с реалистичными текстурами, освещением и атмосферой настоящего склада.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎮</div>
+                    <h3 class="feature-title">Удобное управление</h3>
+                    <p class="feature-desc">Интуитивная система навигации и управления с поддержкой клавиатуры, мыши и сенсорных экранов.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="characters" class="characters">
+            <h2 class="section-title">Персонажи</h2>
+            <div class="character-grid">
+                <div class="character-card">
+                    <div class="character-avatar">🐯</div>
+                    <h3 class="character-name">Стас "Тигр"</h3>
+                    <div class="character-stats">Сила: +20% | Скорость: Высокая с грузом</div>
+                    <p class="character-desc">Бывший военный с железной дисциплиной. Отличается высокой силой и устойчивостью к тяжелым грузам.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-avatar">🐍</div>
+                    <h3 class="character-name">Рамиль "Кобра"</h3>
+                    <div class="character-stats">Точность: +25% | Ошибки: -30%</div>
+                    <p class="character-desc">Хладнокровный стратег с отличной концентрацией. Редко ошибается даже под давлением.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-avatar">✂️</div>
+                    <h3 class="character-name">Юсуп</h3>
+                    <div class="character-stats">Иммунитет к отвлечениям | Стабильность: 100%</div>
+                    <p class="character-desc">Спокойный и сосредоточенный. Не отвлекается на шум и суету склада. Известен своим мастерством резки картона.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-avatar">🌊</div>
+                    <h3 class="character-name">Толян</h3>
+                    <div class="character-stats">Скорость у воды: +15% | Бонус: Бутылки</div>
+                    <p class="character-desc">Работает у речного дока. Получает бонусы в зонах с водяным охлаждением. Принимает оплату бутылками.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-avatar">🍺</div>
+                    <h3 class="character-name">Лёха</h3>
+                    <div class="character-stats">Бафы: Варит сам | Риск: Передоз</div>
+                    <p class="character-desc">Мастер-перегонщик. Может варить временные бафы в перерыве. Опасен при чрезмерном употреблении.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-avatar">📋</div>
+                    <h3 class="character-name">Витя</h3>
+                    <div class="character-stats">Возвраты: +25% XP | Организация: Макс</div>
+                    <p class="character-desc">Специалист по обработке возвратов. Получает бонусы за правильное размещение бракованных товаров.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="warehouse" class="warehouse">
+            <h2 class="section-title">Зоны склада</h2>
+            <div class="warehouse-layout">
+                <div class="zone">
+                    <div class="zone-title">Сухие товары</div>
+                    <div class="zone-desc">Пищевые и непищевые товары</div>
+                </div>
+                <div class="zone">
+                    <div class="zone-title">Электроника</div>
+                    <div class="zone-desc">Хрупкие и ценные устройства</div>
+                </div>
+                <div class="zone">
+                    <div class="zone-title">Охлаждение</div>
+                    <div class="zone-desc">Продукты и напитки</div>
+                </div>
+                <div class="zone">
+                    <div class="zone-title">Габариты</div>
+                    <div class="zone-desc">Крупногабаритные товары</div>
+                </div>
+                <div class="zone">
+                    <div class="zone-title">Возвраты</div>
+                    <div class="zone-desc">Обработка брака и возвратов</div>
+                </div>
+                <div class="zone">
+                    <div class="zone-title">Речной док</div>
+                    <div class="zone-desc">Специальная зона с водяным охлаждением</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="features">
+            <h2 class="section-title">О проекте</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">Технологии</h3>
+                    <p class="feature-desc">HTML5 + Canvas/WebGL<br>Phaser.js<br>Оптимизировано для среднего уровня оборудования</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Производительность</h3>
+                    <p class="feature-desc">Поддержка 1366×768+<br>30-60 FPS на целевой конфигурации<br>&lt;1000 строк основного кода</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Мультиплеер</h3>
+                    <p class="feature-desc">Кооперативный режим 2 игрока<br>Опциональный голосовой чат<br>Совместная работа над заказами</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">WAREHOUSE RUSH: ORDER MASTERS</div>
+                <ul class="footer-links">
+                    <li><a href="#" class="footer-link">Политика конфиденциальности</a></li>
+                    <li><a href="#" class="footer-link">Условия использования</a></li>
+                    <li><a href="#" class="footer-link">Поддержка</a></li>
+                    <li><a href="#" class="footer-link">Контакты</a></li>
+                </ul>
+                <div class="copyright">
+                    © 2025 Warehouse Rush: Order Masters. Все права защищены.<br>
+                    Создано с любовью к индустриальной эстетике и складской логистике.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add fade-in animation to elements when they come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .character-card, .zone').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Add hover effects to interactive elements
+        document.querySelectorAll('.feature-card, .character-card, .zone').forEach(el => {
+            el.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            el.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Animate the CTA button on hover
+        const ctaButton = document.querySelector('.cta-button');
+        if (ctaButton) {
+            ctaButton.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.05)';
+            });
+            
+            ctaButton.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        }
+
+        // Add loading simulation to the CTA button
+        const loadingElement = document.querySelector('.loading');
+        if (loadingElement) {
+            setInterval(() => {
+                loadingElement.style.animation = 'none';
+                setTimeout(() => {
+                    loadingElement.style.animation = 'spin 1s ease-in-out infinite';
+                }, 10);
+            }, 3000);
+        }
+
+        // Add scroll event listener for header effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 50) {
+                header.style.boxShadow = '0 6px 20px rgba(0,0,0,0.7)';
+            } else {
+                header.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+            }
+        });
+
+        // Add dynamic content updates
+        function updateDynamicContent() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU');
+            const dateString = now.toLocaleDateString('ru-RU');
+            
+            // Update hero section with dynamic content
+            const heroSection = document.querySelector('.hero');
+            if (heroSection) {
+                const timeElement = document.createElement('div');
+                timeElement.className = 'current-time';
+                timeElement.style.color = '#f39c12';
+                timeElement.style.marginTop = '10px';
+                timeElement.style.fontSize = '0.9rem';
+                timeElement.textContent = `Системное время: ${timeString} | ${dateString}`;
+                heroSection.appendChild(timeElement);
+            }
+        }
+
+        // Initialize dynamic content
+        updateDynamicContent();
+        setInterval(updateDynamicContent, 1000);
+
+        // Add interactive warehouse zone highlighting
+        document.querySelectorAll('.zone').forEach(zone => {
+            zone.addEventListener('click', function() {
+                // Remove active class from all zones
+                document.querySelectorAll('.zone').forEach(z => {
+                    z.style.border = '1px solid #27ae60';
+                    z.style.transform = 'scale(1)';
+                });
+                
+                // Add active class to clicked zone
+                this.style.border = '3px solid #f39c12';
+                this.style.transform = 'scale(1.1)';
+                
+                // Show zone details in a modal or notification
+                const zoneTitle = this.querySelector('.zone-title').textContent;
+                const zoneDesc = this.querySelector('.zone-desc').textContent;
+                
+                // Create temporary notification
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.top = '50%';
+                notification.style.left = '50%';
+                notification.style.transform = 'translate(-50%, -50%)';
+                notification.style.background = 'rgba(44, 62, 80, 0.95)';
+                notification.style.color = '#ecf0f1';
+                notification.style.padding = '20px';
+                notification.style.borderRadius = '10px';
+                notification.style.border = '2px solid #f39c12';
+                notification.style.zIndex = '1000';
+                notification.style.textAlign = 'center';
+                notification.innerHTML = `
+                    <h3 style="color: #27ae60; margin-bottom: 10px;">${zoneTitle}</h3>
+                    <p>${zoneDesc}</p>
+                    <p style="margin-top: 10px; font-size: 0.8rem; color: #bdc3c7;">Зона разблокирована для персонажей с соответствующими навыками</p>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 2000);
+            });
+        });
+
+        // Add character selection functionality
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.character-card').forEach(c => {
+                    c.style.border = '2px solid #f39c12';
+                    c.style.transform = 'scale(1)';
+                });
+                
+                // Add selected class to clicked card
+                this.style.border = '3px solid #27ae60';
+                this.style.transform = 'scale(1.1)';
+                
+                // Show character selection feedback
+                const characterName = this.querySelector('.character-name').textContent;
+                console.log(`Выбран персонаж: ${characterName}`);
+                
+                // Create selection confirmation
+                const confirmElement = document.createElement('div');
+                confirmElement.style.position = 'absolute';
+                confirmElement.style.top = '10px';
+                confirmElement.style.right = '10px';
+                confirmElement.style.background = '#27ae60';
+                confirmElement.style.color = 'white';
+                confirmElement.style.padding = '5px 10px';
+                confirmElement.style.borderRadius = '5px';
+                confirmElement.style.fontSize = '0.8rem';
+                confirmElement.textContent = 'ВЫБРАН';
+                
+                this.appendChild(confirmElement);
+                
+                setTimeout(() => {
+                    if (confirmElement.parentNode) {
+                        this.removeChild(confirmElement);
+                    }
+                }, 2000);
+            });
+        });
+
+        // Add game launch simulation
+        const playButton = document.querySelector('.cta-button');
+        if (playButton) {
+            playButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                this.innerHTML = 'ЗАГРУЗКА... <span class="loading"></span>';
+                this.style.background = 'linear-gradient(45deg, #f39c12, #e67e22)';
+                
+                // Simulate game loading
+                setTimeout(() => {
+                    alert('Демонстрация игры запущена! В реальной версии здесь будет загрузка игрового клиента.');
+                    this.innerHTML = 'Начать игру <span class="loading"></span>';
+                    this.style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
+                }, 3000);
+            });
+        }
+
+        // Add keyboard navigation support
+        document.addEventListener('keydown', function(event) {
+            // Arrow key navigation for features
+            if (event.key === 'ArrowRight') {
+                const features = document.querySelectorAll('.feature-card');
+                if (features.length > 0) {
+                    const firstFeature = features[0];
+                    firstFeature.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            // Spacebar to start game
+            if (event.key === ' ' && event.target.tagName !== 'INPUT') {
+                event.preventDefault();
+                const playButton = document.querySelector('.cta-button');
+                if (playButton) {
+                    playButton.click();
+                }
+            }
+        });
+
+        // Add touch support for mobile devices
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+            
+            // Add touch feedback to interactive elements
+            document.querySelectorAll('.feature-card, .character-card, .zone, .cta-button').forEach(el => {
+                el.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                el.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
